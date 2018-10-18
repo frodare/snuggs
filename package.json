@@ -1,0 +1,19 @@
+{
+  "name": "snuggs",
+  "version": "1.0.0",
+  "description": "Simple curses frontent to kubectl",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "standard": {
+    "env": "node"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.8.7",
+    "standard": "^12.0.1"
+  }
+}

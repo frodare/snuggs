@@ -1,0 +1,985 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "sidecar.istio.io/status": "{\"version\":\"666176cf119f5520023f04b79663e0d1ebeaf2aece1864b5abf1547879b22129\",\"initContainers\":[\"istio-init\"],\"containers\":[\"istio-proxy\"],\"volumes\":[\"istio-envoy\",\"istio-certs\"],\"imagePullSecrets\":null}"
+                },
+                "creationTimestamp": "2018-10-16T14:20:58Z",
+                "generateName": "arc-5dd6dd8b5b-",
+                "labels": {
+                    "app": "arc",
+                    "pod-template-hash": "1882884616",
+                    "stage": "prod"
+                },
+                "name": "arc-5dd6dd8b5b-bf4qb",
+                "namespace": "default",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "extensions/v1beta1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "ReplicaSet",
+                        "name": "arc-5dd6dd8b5b",
+                        "uid": "2a8e0c9b-d0b3-11e8-a618-0a110c256f16"
+                    }
+                ],
+                "resourceVersion": "1746282",
+                "selfLink": "/api/v1/namespaces/default/pods/arc-5dd6dd8b5b-bf4qb",
+                "uid": "b3d89657-d14e-11e8-a618-0a110c256f16"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "855307517386.dkr.ecr.us-east-1.amazonaws.com/arc:2.0.39-SNAPSHOT-jib",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "arc",
+                        "ports": [
+                            {
+                                "containerPort": 8080,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "resources": {
+                            "limits": {
+                                "cpu": "1",
+                                "memory": "500Mi"
+                            },
+                            "requests": {
+                                "cpu": "100m",
+                                "memory": "200Mi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/secrets",
+                                "name": "secrets",
+                                "readOnly": true
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "default-token-94s2s",
+                                "readOnly": true
+                            }
+                        ]
+                    },
+                    {
+                        "args": [
+                            "proxy",
+                            "sidecar",
+                            "--configPath",
+                            "/etc/istio/proxy",
+                            "--binaryPath",
+                            "/usr/local/bin/envoy",
+                            "--serviceCluster",
+                            "arc",
+                            "--drainDuration",
+                            "45s",
+                            "--parentShutdownDuration",
+                            "1m0s",
+                            "--discoveryAddress",
+                            "istio-pilot.istio-system:15005",
+                            "--discoveryRefreshDelay",
+                            "1s",
+                            "--zipkinAddress",
+                            "zipkin.istio-system:9411",
+                            "--connectTimeout",
+                            "10s",
+                            "--statsdUdpAddress",
+                            "istio-statsd-prom-bridge.istio-system:9125",
+                            "--proxyAdminPort",
+                            "15000",
+                            "--controlPlaneAuthPolicy",
+                            "MUTUAL_TLS"
+                        ],
+                        "env": [
+                            {
+                                "name": "POD_NAME",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.name"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POD_NAMESPACE",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.namespace"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "INSTANCE_IP",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "status.podIP"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "ISTIO_META_POD_NAME",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.name"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "ISTIO_META_INTERCEPTION_MODE",
+                                "value": "REDIRECT"
+                            }
+                        ],
+                        "image": "gcr.io/istio-release/proxyv2:1.0.2",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "istio-proxy",
+                        "resources": {
+                            "requests": {
+                                "cpu": "10m"
+                            }
+                        },
+                        "securityContext": {
+                            "readOnlyRootFilesystem": true,
+                            "runAsUser": 1337
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/etc/istio/proxy",
+                                "name": "istio-envoy"
+                            },
+                            {
+                                "mountPath": "/etc/certs/",
+                                "name": "istio-certs",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "initContainers": [
+                    {
+                        "args": [
+                            "-p",
+                            "15001",
+                            "-u",
+                            "1337",
+                            "-m",
+                            "REDIRECT",
+                            "-i",
+                            "*",
+                            "-x",
+                            "",
+                            "-b",
+                            "8080,",
+                            "-d",
+                            ""
+                        ],
+                        "image": "gcr.io/istio-release/proxy_init:1.0.2",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "istio-init",
+                        "resources": {},
+                        "securityContext": {
+                            "capabilities": {
+                                "add": [
+                                    "NET_ADMIN"
+                                ]
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File"
+                    }
+                ],
+                "nodeName": "ip-192-168-163-26.ec2.internal",
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "default",
+                "serviceAccountName": "default",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "secrets",
+                        "secret": {
+                            "defaultMode": 420,
+                            "secretName": "java-secrets"
+                        }
+                    },
+                    {
+                        "name": "default-token-94s2s",
+                        "secret": {
+                            "defaultMode": 420,
+                            "secretName": "default-token-94s2s"
+                        }
+                    },
+                    {
+                        "emptyDir": {
+                            "medium": "Memory"
+                        },
+                        "name": "istio-envoy"
+                    },
+                    {
+                        "name": "istio-certs",
+                        "secret": {
+                            "defaultMode": 420,
+                            "optional": true,
+                            "secretName": "istio.default"
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2018-10-16T14:21:01Z",
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2018-10-16T14:21:14Z",
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2018-10-16T14:20:58Z",
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "docker://50339f96e85e8a0ea7d51fd69924991e79385584832c3a675f8b20f1eb18c110",
+                        "image": "855307517386.dkr.ecr.us-east-1.amazonaws.com/arc:2.0.39-SNAPSHOT-jib",
+                        "imageID": "docker-pullable://855307517386.dkr.ecr.us-east-1.amazonaws.com/arc@sha256:320a0e233041a6c2f353660208f63a3788debe2a6836038b9e956e23b8647383",
+                        "lastState": {},
+                        "name": "arc",
+                        "ready": true,
+                        "restartCount": 0,
+                        "state": {
+                            "running": {
+                                "startedAt": "2018-10-16T14:21:13Z"
+                            }
+                        }
+                    },
+                    {
+                        "containerID": "docker://17eca01e2683c94356e3a3aab5cbfc4211b38cf04251875363e672c2701e5f24",
+                        "image": "gcr.io/istio-release/proxyv2:1.0.2",
+                        "imageID": "docker-pullable://gcr.io/istio-release/proxyv2@sha256:54e206530ba6ca9b3820254454e01b7592e9f986d27a5640b6c03704b3b68332",
+                        "lastState": {},
+                        "name": "istio-proxy",
+                        "ready": true,
+                        "restartCount": 0,
+                        "state": {
+                            "running": {
+                                "startedAt": "2018-10-16T14:21:13Z"
+                            }
+                        }
+                    }
+                ],
+                "hostIP": "192.168.163.26",
+                "initContainerStatuses": [
+                    {
+                        "containerID": "docker://c79f8417c7625d6c2fa53dce3a4b99594ec40ad3f6e0040f663fe43c63a85c3b",
+                        "image": "gcr.io/istio-release/proxy_init:1.0.2",
+                        "imageID": "docker-pullable://gcr.io/istio-release/proxy_init@sha256:e16a0746f46cd45a9f63c27b9e09daff5432e33a2d80c8cc0956d7d63e2f9185",
+                        "lastState": {},
+                        "name": "istio-init",
+                        "ready": true,
+                        "restartCount": 0,
+                        "state": {
+                            "terminated": {
+                                "containerID": "docker://c79f8417c7625d6c2fa53dce3a4b99594ec40ad3f6e0040f663fe43c63a85c3b",
+                                "exitCode": 0,
+                                "finishedAt": "2018-10-16T14:21:00Z",
+                                "reason": "Completed",
+                                "startedAt": "2018-10-16T14:20:59Z"
+                            }
+                        }
+                    }
+                ],
+                "phase": "Running",
+                "podIP": "192.168.166.103",
+                "qosClass": "Burstable",
+                "startTime": "2018-10-16T14:20:59Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "sidecar.istio.io/status": "{\"version\":\"666176cf119f5520023f04b79663e0d1ebeaf2aece1864b5abf1547879b22129\",\"initContainers\":[\"istio-init\"],\"containers\":[\"istio-proxy\"],\"volumes\":[\"istio-envoy\",\"istio-certs\"],\"imagePullSecrets\":null}"
+                },
+                "creationTimestamp": "2018-10-16T14:20:58Z",
+                "generateName": "arc-5dd6dd8b5b-",
+                "labels": {
+                    "app": "arc",
+                    "pod-template-hash": "1882884616",
+                    "stage": "prod"
+                },
+                "name": "arc-5dd6dd8b5b-fkxzw",
+                "namespace": "default",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "extensions/v1beta1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "ReplicaSet",
+                        "name": "arc-5dd6dd8b5b",
+                        "uid": "2a8e0c9b-d0b3-11e8-a618-0a110c256f16"
+                    }
+                ],
+                "resourceVersion": "1746236",
+                "selfLink": "/api/v1/namespaces/default/pods/arc-5dd6dd8b5b-fkxzw",
+                "uid": "b3da7b6a-d14e-11e8-a618-0a110c256f16"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "855307517386.dkr.ecr.us-east-1.amazonaws.com/arc:2.0.39-SNAPSHOT-jib",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "arc",
+                        "ports": [
+                            {
+                                "containerPort": 8080,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "resources": {
+                            "limits": {
+                                "cpu": "1",
+                                "memory": "500Mi"
+                            },
+                            "requests": {
+                                "cpu": "100m",
+                                "memory": "200Mi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/secrets",
+                                "name": "secrets",
+                                "readOnly": true
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "default-token-94s2s",
+                                "readOnly": true
+                            }
+                        ]
+                    },
+                    {
+                        "args": [
+                            "proxy",
+                            "sidecar",
+                            "--configPath",
+                            "/etc/istio/proxy",
+                            "--binaryPath",
+                            "/usr/local/bin/envoy",
+                            "--serviceCluster",
+                            "arc",
+                            "--drainDuration",
+                            "45s",
+                            "--parentShutdownDuration",
+                            "1m0s",
+                            "--discoveryAddress",
+                            "istio-pilot.istio-system:15005",
+                            "--discoveryRefreshDelay",
+                            "1s",
+                            "--zipkinAddress",
+                            "zipkin.istio-system:9411",
+                            "--connectTimeout",
+                            "10s",
+                            "--statsdUdpAddress",
+                            "istio-statsd-prom-bridge.istio-system:9125",
+                            "--proxyAdminPort",
+                            "15000",
+                            "--controlPlaneAuthPolicy",
+                            "MUTUAL_TLS"
+                        ],
+                        "env": [
+                            {
+                                "name": "POD_NAME",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.name"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POD_NAMESPACE",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.namespace"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "INSTANCE_IP",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "status.podIP"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "ISTIO_META_POD_NAME",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.name"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "ISTIO_META_INTERCEPTION_MODE",
+                                "value": "REDIRECT"
+                            }
+                        ],
+                        "image": "gcr.io/istio-release/proxyv2:1.0.2",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "istio-proxy",
+                        "resources": {
+                            "requests": {
+                                "cpu": "10m"
+                            }
+                        },
+                        "securityContext": {
+                            "readOnlyRootFilesystem": true,
+                            "runAsUser": 1337
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/etc/istio/proxy",
+                                "name": "istio-envoy"
+                            },
+                            {
+                                "mountPath": "/etc/certs/",
+                                "name": "istio-certs",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "initContainers": [
+                    {
+                        "args": [
+                            "-p",
+                            "15001",
+                            "-u",
+                            "1337",
+                            "-m",
+                            "REDIRECT",
+                            "-i",
+                            "*",
+                            "-x",
+                            "",
+                            "-b",
+                            "8080,",
+                            "-d",
+                            ""
+                        ],
+                        "image": "gcr.io/istio-release/proxy_init:1.0.2",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "istio-init",
+                        "resources": {},
+                        "securityContext": {
+                            "capabilities": {
+                                "add": [
+                                    "NET_ADMIN"
+                                ]
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File"
+                    }
+                ],
+                "nodeName": "ip-192-168-109-246.ec2.internal",
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "default",
+                "serviceAccountName": "default",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "secrets",
+                        "secret": {
+                            "defaultMode": 420,
+                            "secretName": "java-secrets"
+                        }
+                    },
+                    {
+                        "name": "default-token-94s2s",
+                        "secret": {
+                            "defaultMode": 420,
+                            "secretName": "default-token-94s2s"
+                        }
+                    },
+                    {
+                        "emptyDir": {
+                            "medium": "Memory"
+                        },
+                        "name": "istio-envoy"
+                    },
+                    {
+                        "name": "istio-certs",
+                        "secret": {
+                            "defaultMode": 420,
+                            "optional": true,
+                            "secretName": "istio.default"
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2018-10-16T14:21:00Z",
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2018-10-16T14:21:01Z",
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2018-10-16T14:20:59Z",
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "docker://3bc20bc51dde654a49d940cb4f0c292dbd1dbc57bb807f62d1a32c8dabf20433",
+                        "image": "855307517386.dkr.ecr.us-east-1.amazonaws.com/arc:2.0.39-SNAPSHOT-jib",
+                        "imageID": "docker-pullable://855307517386.dkr.ecr.us-east-1.amazonaws.com/arc@sha256:320a0e233041a6c2f353660208f63a3788debe2a6836038b9e956e23b8647383",
+                        "lastState": {},
+                        "name": "arc",
+                        "ready": true,
+                        "restartCount": 0,
+                        "state": {
+                            "running": {
+                                "startedAt": "2018-10-16T14:21:00Z"
+                            }
+                        }
+                    },
+                    {
+                        "containerID": "docker://a590461cb7052701d410647d9d80af5629bff1b90ce8ea1d0ae3e6487c598961",
+                        "image": "gcr.io/istio-release/proxyv2:1.0.2",
+                        "imageID": "docker-pullable://gcr.io/istio-release/proxyv2@sha256:54e206530ba6ca9b3820254454e01b7592e9f986d27a5640b6c03704b3b68332",
+                        "lastState": {},
+                        "name": "istio-proxy",
+                        "ready": true,
+                        "restartCount": 0,
+                        "state": {
+                            "running": {
+                                "startedAt": "2018-10-16T14:21:00Z"
+                            }
+                        }
+                    }
+                ],
+                "hostIP": "192.168.109.246",
+                "initContainerStatuses": [
+                    {
+                        "containerID": "docker://21ced40685e5cb7ee46ab9b6609e803e55a08c388cffc748cf8989b048746a43",
+                        "image": "gcr.io/istio-release/proxy_init:1.0.2",
+                        "imageID": "docker-pullable://gcr.io/istio-release/proxy_init@sha256:e16a0746f46cd45a9f63c27b9e09daff5432e33a2d80c8cc0956d7d63e2f9185",
+                        "lastState": {},
+                        "name": "istio-init",
+                        "ready": true,
+                        "restartCount": 0,
+                        "state": {
+                            "terminated": {
+                                "containerID": "docker://21ced40685e5cb7ee46ab9b6609e803e55a08c388cffc748cf8989b048746a43",
+                                "exitCode": 0,
+                                "finishedAt": "2018-10-16T14:20:59Z",
+                                "reason": "Completed",
+                                "startedAt": "2018-10-16T14:20:59Z"
+                            }
+                        }
+                    }
+                ],
+                "phase": "Running",
+                "podIP": "192.168.70.55",
+                "qosClass": "Burstable",
+                "startTime": "2018-10-16T14:20:59Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "sidecar.istio.io/status": "{\"version\":\"666176cf119f5520023f04b79663e0d1ebeaf2aece1864b5abf1547879b22129\",\"initContainers\":[\"istio-init\"],\"containers\":[\"istio-proxy\"],\"volumes\":[\"istio-envoy\",\"istio-certs\"],\"imagePullSecrets\":null}"
+                },
+                "creationTimestamp": "2018-10-16T17:16:22Z",
+                "generateName": "www-55fb674d9d-",
+                "labels": {
+                    "app": "www",
+                    "pod-template-hash": "1196230858",
+                    "version": "blue"
+                },
+                "name": "www-55fb674d9d-648l2",
+                "namespace": "default",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "extensions/v1beta1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "ReplicaSet",
+                        "name": "www-55fb674d9d",
+                        "uid": "3441d07a-d167-11e8-a618-0a110c256f16"
+                    }
+                ],
+                "resourceVersion": "1764601",
+                "selfLink": "/api/v1/namespaces/default/pods/www-55fb674d9d-648l2",
+                "uid": "3444ab7e-d167-11e8-a618-0a110c256f16"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "855307517386.dkr.ecr.us-east-1.amazonaws.com/www:0.1",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "www",
+                        "ports": [
+                            {
+                                "containerPort": 80,
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "resources": {
+                            "limits": {
+                                "cpu": "100m",
+                                "memory": "200Mi"
+                            },
+                            "requests": {
+                                "cpu": "100m",
+                                "memory": "200Mi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "default-token-94s2s",
+                                "readOnly": true
+                            }
+                        ]
+                    },
+                    {
+                        "args": [
+                            "proxy",
+                            "sidecar",
+                            "--configPath",
+                            "/etc/istio/proxy",
+                            "--binaryPath",
+                            "/usr/local/bin/envoy",
+                            "--serviceCluster",
+                            "www",
+                            "--drainDuration",
+                            "45s",
+                            "--parentShutdownDuration",
+                            "1m0s",
+                            "--discoveryAddress",
+                            "istio-pilot.istio-system:15005",
+                            "--discoveryRefreshDelay",
+                            "1s",
+                            "--zipkinAddress",
+                            "zipkin.istio-system:9411",
+                            "--connectTimeout",
+                            "10s",
+                            "--statsdUdpAddress",
+                            "istio-statsd-prom-bridge.istio-system:9125",
+                            "--proxyAdminPort",
+                            "15000",
+                            "--controlPlaneAuthPolicy",
+                            "MUTUAL_TLS"
+                        ],
+                        "env": [
+                            {
+                                "name": "POD_NAME",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.name"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POD_NAMESPACE",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.namespace"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "INSTANCE_IP",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "status.podIP"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "ISTIO_META_POD_NAME",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.name"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "ISTIO_META_INTERCEPTION_MODE",
+                                "value": "REDIRECT"
+                            }
+                        ],
+                        "image": "gcr.io/istio-release/proxyv2:1.0.2",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "istio-proxy",
+                        "resources": {
+                            "requests": {
+                                "cpu": "10m"
+                            }
+                        },
+                        "securityContext": {
+                            "readOnlyRootFilesystem": true,
+                            "runAsUser": 1337
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/etc/istio/proxy",
+                                "name": "istio-envoy"
+                            },
+                            {
+                                "mountPath": "/etc/certs/",
+                                "name": "istio-certs",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "initContainers": [
+                    {
+                        "args": [
+                            "-p",
+                            "15001",
+                            "-u",
+                            "1337",
+                            "-m",
+                            "REDIRECT",
+                            "-i",
+                            "*",
+                            "-x",
+                            "",
+                            "-b",
+                            "80,",
+                            "-d",
+                            ""
+                        ],
+                        "image": "gcr.io/istio-release/proxy_init:1.0.2",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "istio-init",
+                        "resources": {},
+                        "securityContext": {
+                            "capabilities": {
+                                "add": [
+                                    "NET_ADMIN"
+                                ]
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File"
+                    }
+                ],
+                "nodeName": "ip-192-168-241-187.ec2.internal",
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "default",
+                "serviceAccountName": "default",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "default-token-94s2s",
+                        "secret": {
+                            "defaultMode": 420,
+                            "secretName": "default-token-94s2s"
+                        }
+                    },
+                    {
+                        "emptyDir": {
+                            "medium": "Memory"
+                        },
+                        "name": "istio-envoy"
+                    },
+                    {
+                        "name": "istio-certs",
+                        "secret": {
+                            "defaultMode": 420,
+                            "optional": true,
+                            "secretName": "istio.default"
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2018-10-16T17:16:24Z",
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2018-10-16T17:16:25Z",
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2018-10-16T17:16:22Z",
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "docker://01d68034e0a39268c0082932fed18c25889923f6c168e00a516b4c7ecc0f0b34",
+                        "image": "gcr.io/istio-release/proxyv2:1.0.2",
+                        "imageID": "docker-pullable://gcr.io/istio-release/proxyv2@sha256:54e206530ba6ca9b3820254454e01b7592e9f986d27a5640b6c03704b3b68332",
+                        "lastState": {},
+                        "name": "istio-proxy",
+                        "ready": true,
+                        "restartCount": 0,
+                        "state": {
+                            "running": {
+                                "startedAt": "2018-10-16T17:16:24Z"
+                            }
+                        }
+                    },
+                    {
+                        "containerID": "docker://d0703b07fa59bb57cd8823e507729061a8239949f6eb49042be79f4e651e762e",
+                        "image": "855307517386.dkr.ecr.us-east-1.amazonaws.com/www:0.1",
+                        "imageID": "docker-pullable://855307517386.dkr.ecr.us-east-1.amazonaws.com/www@sha256:204bb09a54b77f1684cc4a944215fed4f942ada1d6db441527b5166e19287caf",
+                        "lastState": {},
+                        "name": "www",
+                        "ready": true,
+                        "restartCount": 0,
+                        "state": {
+                            "running": {
+                                "startedAt": "2018-10-16T17:16:24Z"
+                            }
+                        }
+                    }
+                ],
+                "hostIP": "192.168.241.187",
+                "initContainerStatuses": [
+                    {
+                        "containerID": "docker://73d34a48623f91225ffe065d62ee92454ac058f69d3d73704efe3b49d703e77a",
+                        "image": "gcr.io/istio-release/proxy_init:1.0.2",
+                        "imageID": "docker-pullable://gcr.io/istio-release/proxy_init@sha256:e16a0746f46cd45a9f63c27b9e09daff5432e33a2d80c8cc0956d7d63e2f9185",
+                        "lastState": {},
+                        "name": "istio-init",
+                        "ready": true,
+                        "restartCount": 0,
+                        "state": {
+                            "terminated": {
+                                "containerID": "docker://73d34a48623f91225ffe065d62ee92454ac058f69d3d73704efe3b49d703e77a",
+                                "exitCode": 0,
+                                "finishedAt": "2018-10-16T17:16:23Z",
+                                "reason": "Completed",
+                                "startedAt": "2018-10-16T17:16:23Z"
+                            }
+                        }
+                    }
+                ],
+                "phase": "Running",
+                "podIP": "192.168.199.210",
+                "qosClass": "Burstable",
+                "startTime": "2018-10-16T17:16:22Z"
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": "",
+        "selfLink": ""
+    }
+}
