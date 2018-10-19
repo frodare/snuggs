@@ -10,8 +10,8 @@ var screen = blessed.screen({
 screen.title = 'my window title'
 
 const logs = new PodLogBox(Object.assign(commonOptions(), {
-  podName: 'dropbox-575fd68d5f-69mdc',
-  containerName: 'dropbox',
+  podName: 'arc-5dd6dd8b5b-bf4qb',
+  containerName: 'arc',
   top: '30%',
   left: '0',
   height: '70%',
