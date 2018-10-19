@@ -1,4 +1,4 @@
-const kubectlCmd = require('./kubectlCmd')
+const kubectlCmd = require('./lib/util/kubectlCmd')
 
 const getPods = async (ns) => {
   const json = await kubectlCmd('get pods -o json')

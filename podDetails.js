@@ -1,5 +1,5 @@
 const blessed = require('blessed')
-const cmd = require('./kubectlCmd')
+const cmd = require('./lib/util/kubectlCmd')
 const { log } = require('./log')
 
 let box
