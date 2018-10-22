@@ -9,6 +9,10 @@ const eventCodes = require('./lib/util/eventCodes')
 require('./lib/util/podLoader')
 
 // TODO create a events constant file
+// TODO Pod Interaction box: logs or terminal
+// TODO snuggs status next to pod in pod list for port forward or open terminal
+// TODO edit config in EDITOR and apply it
+// TODO quick edit for pod Image
 
 var screen = blessed.screen({
   smartCSR: true
